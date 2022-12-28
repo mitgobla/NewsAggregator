@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/toolbarFollow"
+        android:checkable="true"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/follow"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/toolbarProfileShare"
+        android:icon="?attr/actionModeShareDrawable"
+        android:title="@string/shareAction"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/toolbarSettings"
+        android:title="@string/settings" />
+</menu>

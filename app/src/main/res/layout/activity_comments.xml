@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
+
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/mainToolbar"
@@ -14,36 +14,33 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/toolbar_front_page"
+        app:navigationIcon="?attr/homeAsUpIndicator"
         app:subtitleTextColor="@color/white"
         app:title="@string/appName" />
 
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/commentsView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollIndicators="right"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintTop_toBottomOf="@+id/mainToolbar"
+        tools:listitem="@layout/comment_item" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
+        android:layout_width="411dp"
         android:layout_height="wrap_content"
         android:background="?android:attr/colorBackground"
         app:labelVisibilityMode="auto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/nav_bottom_front_page" />
+        app:menu="@menu/nav_bottom_article">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentMain"
-        android:name="com.mitgobla.newsaggregator.topics.TopicsFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="@+id/bottomNavigationView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainToolbar"
-        tools:layout="@layout/fragment_topics" />
-
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 </androidx.constraintlayout.widget.ConstraintLayout>
