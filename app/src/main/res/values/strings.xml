@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">NewsAggregator</string>
+    <string name="appName">News App Name</string>
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+    <string name="frontPageAction">Home</string>
+    <string name="topicsPageAction">Topics</string>
+    <string name="breaking">Breaking</string>
+    <string name="myTopics">My Topics</string>
+    <string name="location">Location</string>
+    <string name="loremIpsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies suscipit leo, eu varius augue sollicitudin sed. Duis varius nec augue nec vulputate. Nunc sit amet neque et magna lobortis dignissim. Pellentesque lacinia rhoncus quam, non posuere sapien vestibulum ut. Quisque tempus justo eu ligula aliquam cursus. Suspendisse enim tortor, suscipit eu erat ac, interdum varius diam. Aenean vel magna in dui suscipit dapibus ut nec odio. Nam eleifend a purus vitae semper. Pellentesque lectus sapien, fermentum vel vulputate eu, consequat quis dolor.\n\n  Vivamus erat elit, porta vel turpis quis, condimentum fermentum augue. Vestibulum eu massa pharetra, consectetur augue in, commodo ex. Praesent tincidunt mi a est porta, ac rutrum lorem euismod. Pellentesque sapien tellus, facilisis vitae pharetra lobortis, tempus eu risus. Nullam cursus ornare arcu vitae pellentesque. Aenean tristique eleifend nisl, nec fringilla felis egestas non. Phasellus feugiat congue bibendum. Fusce dictum nibh nec eros fermentum, id iaculis urna sagittis. Vestibulum cursus dignissim tincidunt. Sed sollicitudin, mauris ut pulvinar iaculis, mauris orci facilisis elit, vel facilisis nisl lorem vitae diam.\n\n  Curabitur molestie, sem id finibus fermentum, erat ligula sodales tellus, ac faucibus justo felis vel dui. Donec turpis augue, imperdiet eget massa in, porta semper risus. Donec mattis augue sit amet ex ultrices, non ultricies nibh egestas. Aliquam porta, lectus sed condimentum ullamcorper, nisi ex maximus justo, a imperdiet massa urna eget nisl. Quisque egestas dictum arcu. Praesent diam ligula, porttitor sed scelerisque quis, dictum ut elit. Ut magna quam, commodo et ante eget, consequat lobortis nisl. Mauris efficitur consectetur dapibus.</string>
+    <string name="loremIpsumShort">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus ultricies suscipit leo, eu varius augue sollicitudin sed. Duis varius nec augue nec vulputate. Nunc sit amet neque et magna lobortis dignissim. Pellentesque lacinia rhoncus quam, non posuere sapien vestibulum ut. Quisque tempus justo eu ligula aliquam cursus. Suspendisse enim tortor, suscipit eu erat ac, interdum varius diam. Aenean vel magna in dui suscipit dapibus ut nec odio. Nam eleifend a purus vitae semper. Pellentesque lectus sapien, fermentum vel vulputate eu, consequat quis dolor.</string>
+    <string name="map">Map</string>
+    <string name="authorPlaceholder">Article written by Example Example</string>
+    <string name="authorImageDescriptionPlaceholder">Author Image</string>
+    <string name="articleImageDescriptionPlaceholder">Article Image</string>
+    <string name="articleHeaderPlaceholder" >News Article Header</string>
+    <string name="commentAction">Comment</string>
+    <string name="bookmarkAction">Bookmark</string>
+    <string name="shareAction">Share</string>
+    <string name="actionStar">Select</string>
+    <string name="topicPlaceholder">News Topic</string>
+    <string name="commentNamePlaceholder">Comment written by Name Name</string>
+    <string name="profileNamePlaceholder">Name Name\'s Profile</string>
+    <string name="about">About</string>
+    <string name="history">History</string>
+    <string name="following">Following</string>
+    <string name="follow">Follow</string>
+    <string name="authorHistory">Articles written by Name Name</string>
+    <string name="followerPlaceholder">500 Followers</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="profileAction">Profile</string>
+    <string name="metrics">Your Metrics</string>
 </resources>
