@@ -19,7 +19,7 @@
             android:layout_height="match_parent">
 
             <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/buttonStar"
+                android:id="@+id/topicItemStar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@android:drawable/btn_star"
@@ -30,19 +30,19 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/topicText"
+                android:id="@+id/topicItemText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:text="@string/topicPlaceholder"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/toggleTopicNotifications"
-                app:layout_constraintStart_toEndOf="@+id/buttonStar"
+                app:layout_constraintEnd_toStartOf="@+id/topicItemNotify"
+                app:layout_constraintStart_toEndOf="@+id/topicItemStar"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/toggleTopicNotifications"
+                android:id="@+id/topicItemNotify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:button="@drawable/ic_toggle_notifications"
