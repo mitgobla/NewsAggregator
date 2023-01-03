@@ -3,7 +3,10 @@ package com.mitgobla.newsaggregator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -16,6 +19,8 @@ import com.mitgobla.newsaggregator.topics.TopicsFragment
 
 class MainActivity : AppCompatActivity() {
 
+    private var searchButtonVisible = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         // set the toolbar
         val toolbar = findViewById<Toolbar>(R.id.mainToolbar)
         setSupportActionBar(toolbar)
+        searchButtonVisible = false
 
         // values for fragments
         val frontPageFragment = FrontPageFragment()
@@ -38,18 +44,22 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.homeAction -> {
                     setCurrentFragment(frontPageFragment)
+                    searchButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.topicsAction -> {
                     setCurrentFragment(topicsFragment)
+                    searchButtonVisible = true
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.mapAction -> {
                     setCurrentFragment(mapFragment)
+                    searchButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.profileAction -> {
                     setCurrentFragment(frontPageFragment)
+                    searchButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {
@@ -64,9 +74,19 @@ class MainActivity : AppCompatActivity() {
         commit()
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        super.onPrepareOptionsMenu(menu)
+        val searchItem = menu?.findItem(R.id.toolbarSearch)
+        if (searchItem != null) {
+            searchItem.isVisible = searchButtonVisible
+        }
+        return true
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
         menuInflater.inflate((R.menu.toolbar_front_page), menu)
-        return super.onCreateOptionsMenu(menu)
+        return true
     }
 
 }
