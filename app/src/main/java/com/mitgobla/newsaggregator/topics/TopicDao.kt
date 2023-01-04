@@ -13,7 +13,13 @@ interface TopicDao {
     @Query("SELECT *, rowid FROM topics_table ORDER BY topic, favourite ASC")
     fun getSortedTopics(): Flow<List<Topic>>
 
-    @Update
+    @Query("SELECT *, rowid FROM topics_table WHERE favourite = 1 ORDER BY topic ASC")
+    fun getFavouriteTopics(): Flow<List<Topic>>
+
+    @Query("SELECT *, rowid FROM topics_table WHERE topic LIKE '%' || :query || '%' ORDER BY topic, favourite, notify ASC")
+    fun searchTopics(query: String): Flow<List<Topic>>
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTopic(topic: Topic)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

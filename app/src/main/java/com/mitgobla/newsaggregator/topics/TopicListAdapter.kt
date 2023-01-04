@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.TextViewCompat
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mitgobla.newsaggregator.R
 
-class TopicListAdapter(private val topicStateListener: (Topic) -> Unit) : ListAdapter<Topic, TopicListAdapter.TopicViewHolder>(TopicComparator()) {
+class TopicListAdapter(private var clickListener : ((Topic) -> Unit)) : ListAdapter<Topic, TopicListAdapter.TopicViewHolder>(TopicComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicViewHolder {
         return TopicViewHolder.create(parent)
@@ -21,31 +22,25 @@ class TopicListAdapter(private val topicStateListener: (Topic) -> Unit) : ListAd
 
     override fun onBindViewHolder(holder: TopicViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(current.topic, current.favourite, current.notify)
-
-        holder.topicItemNotifyView.setOnCheckedChangeListener { _, state ->
-            current.notify = state
-            topicStateListener(current)
-        }
-
-        holder.topicItemFavouriteView.setOnCheckedChangeListener { _, state ->
-            current.favourite = state
-            topicStateListener(current)
-        }
+        holder.bind(current.id, current.topic, current.favourite, current.notify, clickListener)
     }
 
     class TopicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val topicItemTextView: AppCompatTextView = itemView.findViewById(R.id.topicItemText)
-        val topicItemFavouriteView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemStar)
-        val topicItemNotifyView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemNotify)
+        private val topicItemFavouriteView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemStar)
+        private val topicItemNotifyView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemNotify)
 
-        fun bind(text: String?, favourite: Boolean?, notify: Boolean?) {
+        fun bind(rowid: Int, text: String, favourite: Boolean, notify: Boolean, clickListener: ((Topic) -> Unit)) {
             topicItemTextView.text = text
-            if (favourite != null) {
-                topicItemFavouriteView.isChecked = favourite
+            topicItemFavouriteView.isChecked = favourite
+            topicItemNotifyView.isChecked = notify
+
+            topicItemFavouriteView.setOnCheckedChangeListener { _, state ->
+                clickListener.invoke(Topic(rowid, text, state, notify))
             }
-            if (notify != null) {
-                topicItemNotifyView.isChecked = notify
+
+            topicItemNotifyView.setOnCheckedChangeListener { _, state ->
+                clickListener.invoke(Topic(rowid, text, favourite, state))
             }
         }
 
@@ -60,7 +55,7 @@ class TopicListAdapter(private val topicStateListener: (Topic) -> Unit) : ListAd
 
     class TopicComparator : DiffUtil.ItemCallback<Topic>() {
         override fun areItemsTheSame(oldItem: Topic, newItem: Topic): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Topic, newItem: Topic): Boolean {
