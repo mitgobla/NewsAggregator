@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "435114553987",
+    "project_id": "swansea-mobile-apps",
+    "storage_bucket": "swansea-mobile-apps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435114553987:android:1105a84eaefbce951321b6",
+        "android_client_info": {
+          "package_name": "com.mitgobla.newsaggregator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "435114553987-fmimq0sn6r2rtpvitgh7s8481lsbet18.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mitgobla.newsaggregator",
+            "certificate_hash": "82044a9204855a0d78fadbd1117e2591536a91e9"
+          }
+        },
+        {
+          "client_id": "435114553987-g26h445e1r4n7ckkknph3c467hduprao.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-Zt66fo3DtTzXlVw67QqyGbQrwd_nL1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435114553987-g26h445e1r4n7ckkknph3c467hduprao.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

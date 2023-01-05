@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.mitgobla.newsaggregator.auth.ProfileFragment
 import com.mitgobla.newsaggregator.frontpage.FrontPageFragment
 import com.mitgobla.newsaggregator.topics.TopicViewModel
 import com.mitgobla.newsaggregator.topics.TopicViewModelFactory
@@ -20,6 +21,7 @@ import com.mitgobla.newsaggregator.topics.TopicsFragment
 class MainActivity : AppCompatActivity() {
 
     private var searchButtonVisible = false
+    private var signOutButtonVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         val frontPageFragment = FrontPageFragment()
         val mapFragment = MapFragment()
         val topicsFragment = TopicsFragment()
+        val profileFragment = ProfileFragment()
 
         setCurrentFragment(frontPageFragment)
 
@@ -45,21 +48,25 @@ class MainActivity : AppCompatActivity() {
                 R.id.homeAction -> {
                     setCurrentFragment(frontPageFragment)
                     searchButtonVisible = false
+                    signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.topicsAction -> {
                     setCurrentFragment(topicsFragment)
                     searchButtonVisible = true
+                    signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.mapAction -> {
                     setCurrentFragment(mapFragment)
                     searchButtonVisible = false
+                    signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.profileAction -> {
-                    setCurrentFragment(frontPageFragment)
+                    setCurrentFragment(profileFragment)
                     searchButtonVisible = false
+                    signOutButtonVisible = true
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {
@@ -79,6 +86,10 @@ class MainActivity : AppCompatActivity() {
         val searchItem = menu?.findItem(R.id.toolbarSearch)
         if (searchItem != null) {
             searchItem.isVisible = searchButtonVisible
+        }
+        val signOutItem = menu?.findItem(R.id.toolbarSignOut)
+        if (signOutItem != null) {
+            signOutItem.isVisible = signOutButtonVisible
         }
         return true
     }

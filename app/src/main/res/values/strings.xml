@@ -20,7 +20,8 @@
     <string name="actionStar">Select</string>
     <string name="topicPlaceholder">News Topic</string>
     <string name="commentNamePlaceholder">Comment written by Name Name</string>
-    <string name="profileNamePlaceholder">Name Name\'s Profile</string>
+    <string name="profileNamePlaceholder">%s\'s Profile</string>
+    <string name="anonymous">Anonymous</string>
     <string name="about">About</string>
     <string name="history">History</string>
     <string name="following">Following</string>
@@ -30,4 +31,7 @@
     <string name="bookmarks">Bookmarks</string>
     <string name="profileAction">Profile</string>
     <string name="metrics">Your Metrics</string>
+    <string name="login">Login with Google</string>
+    <string name="loginDescription">To bookmark articles, and track your reading metrics, login using Google.</string>
+    <string name="signOut">Sign Out</string>
 </resources>
