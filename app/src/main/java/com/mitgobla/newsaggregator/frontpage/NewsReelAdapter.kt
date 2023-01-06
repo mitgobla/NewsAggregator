@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.mitgobla.newsaggregator.R
+import com.mitgobla.newsaggregator.database.Article
 import com.mitgobla.newsaggregator.network.ArticleResponse
 import com.mitgobla.newsaggregator.network.NewsApiResponse
 
-class NewsReelAdapter : ListAdapter<ArticleResponse, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
+class NewsReelAdapter : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsReelViewHolder {
         return NewsReelViewHolder.create(parent)
@@ -32,13 +33,13 @@ class NewsReelAdapter : ListAdapter<ArticleResponse, NewsReelAdapter.NewsReelVie
         private val newsItemHeader: AppCompatTextView = itemView.findViewById(R.id.newsItemHeader)
         private val newsItemBrief: AppCompatTextView = itemView.findViewById(R.id.newsItemBrief)
 
-        fun bind(position: Int, articleResponse: ArticleResponse) {
-            newsItemHeader.text = articleResponse.title
-            newsItemHeader.contentDescription = articleResponse.title
-            newsItemBrief.text = articleResponse.description
-            newsItemBrief.contentDescription = articleResponse.description
+        fun bind(position: Int, article: Article) {
+            newsItemHeader.text = article.title
+            newsItemHeader.contentDescription = article.title
+            newsItemBrief.text = article.description
+            newsItemBrief.contentDescription = article.description
 
-            newsItemImageView.load(articleResponse.imageUrl) {
+            newsItemImageView.load(article.imageUrl) {
                 crossfade(true)
                 placeholder(ColorDrawable(getColor(itemView.context, R.color.loadingColor)))
                 transformations(RoundedCornersTransformation(10f))
@@ -54,12 +55,12 @@ class NewsReelAdapter : ListAdapter<ArticleResponse, NewsReelAdapter.NewsReelVie
         }
     }
 
-    class NewsReelComparator : DiffUtil.ItemCallback<ArticleResponse>() {
-        override fun areItemsTheSame(oldItem: ArticleResponse, newItem: ArticleResponse): Boolean {
+    class NewsReelComparator : DiffUtil.ItemCallback<Article>() {
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: ArticleResponse, newItem: ArticleResponse): Boolean {
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
             return oldItem == newItem
         }
     }

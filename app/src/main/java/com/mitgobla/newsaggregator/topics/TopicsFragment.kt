@@ -15,6 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.R
 
 class TopicsFragment:Fragment(R.layout.fragment_topics) {
@@ -22,43 +25,47 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
     private val searchQuery = MutableLiveData<String?>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setHasOptionsMenu(true)
-
-        val topicViewModel: TopicViewModel by viewModels {
-            TopicViewModelFactory((activity?.application as TopicsApplication).repository)
-        }
-
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
 
         val topicRecyclerView = view.findViewById<RecyclerView>(R.id.topicsRecyclerView)
 
-        val topicAdapter = TopicListAdapter{
-            topicViewModel.updateTopic(it)
+        val topicAdapter = TopicListAdapter{ topic, favourite, notify ->
+            updateTopic(topic, favourite, notify)
         }
+
+        val db = Firebase.firestore
+        val topicsRef = db.collection("topics").orderBy("favourite", Query.Direction.DESCENDING).orderBy("notify", Query.Direction.DESCENDING).orderBy("topic")
+        topicsRef.get()
+            .addOnSuccessListener { result ->
+                val topics = mutableListOf<Topic>()
+                for (document in result) {
+                    val topic = document.toObject(Topic::class.java)
+                    topics.add(topic)
+                }
+                topicAdapter.submitList(topics)
+            }
+            .addOnFailureListener { exception ->
+                Log.w("TopicsFragment", "Error getting documents.", exception)
+            }
 
         topicRecyclerView.adapter = topicAdapter
         topicRecyclerView.layoutManager = LinearLayoutManager(view.context)
 
-        topicViewModel.allTopics.observe(viewLifecycleOwner) { topics ->
-            topicAdapter.submitList(topics)
-        }
+        searchQuery.observe(viewLifecycleOwner, Observer { query ->
+            topicAdapter.filter(query)
+        })
 
-        searchQuery.value = ""
-        searchQuery.observe(viewLifecycleOwner) { query ->
-            if (query != null) {
-                if (query.isEmpty()) {
-                    topicViewModel.searchTopic.removeObservers(viewLifecycleOwner)
-                    topicViewModel.allTopics.observe(viewLifecycleOwner) { topics ->
-                        topicAdapter.submitList(topics)
-                    }
-                } else {
-                    topicViewModel.searchTopic.removeObservers(viewLifecycleOwner)
-                    topicViewModel.allTopics.removeObservers(viewLifecycleOwner)
-                    topicViewModel.searchTopics(query).observe(viewLifecycleOwner) { topics ->
-                        topicAdapter.submitList(topics)
-                    }
-                }
-            }
+
+    }
+
+    private fun updateTopic(topic: String?, favourite: Boolean, notify: Boolean) {
+        // Update the topic in the firebase database
+        if (topic != null) {
+            val db = Firebase.firestore
+            val topicRef = db.collection("topics").document(topic)
+            topicRef.update("favourite", favourite)
+            topicRef.update("notify", notify)
         }
     }
 
@@ -79,7 +86,7 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
         })
 
         searchView.setOnCloseListener {
-            searchQuery.value = ""
+            searchQuery.value = null
             true
         }
     }

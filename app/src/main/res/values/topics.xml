@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="topic_breaking_news">Breaking News</string>
+    <string name="topic_sports">Sports</string>
+    <string name="topic_entertainment">Entertainment</string>
+    <string name="topic_business">Business</string>
+    <string name="topic_science">Science</string>
+    <string name="topic_technology">Technology</string>
+    <string name="topic_health">Health</string>
+    <string name="topic_food">Food</string>
+    <string name="topic_travel">Travel</string>
+    <string name="topic_cars">Cars</string>
+    <string name="topic_fashion">Fashion</string>
+    <string name="topic_politics">Politics</string>
+    <string name="topic_arts">Arts</string>
+    <string name="topic_books">Books</string>
+    <string name="topic_movies">Movies</string>
+    <string name="topic_music">Music</string>
+    <string name="topic_tv">Television</string>
+    <string name="topic_games">Games</string>
+
+    <string-array name="topics">
+        <item>@string/topic_breaking_news</item>
+        <item>@string/topic_sports</item>
+        <item>@string/topic_entertainment</item>
+        <item>@string/topic_business</item>
+        <item>@string/topic_science</item>
+        <item>@string/topic_technology</item>
+        <item>@string/topic_health</item>
+        <item>@string/topic_food</item>
+        <item>@string/topic_travel</item>
+        <item>@string/topic_cars</item>
+        <item>@string/topic_fashion</item>
+        <item>@string/topic_politics</item>
+        <item>@string/topic_arts</item>
+        <item>@string/topic_books</item>
+        <item>@string/topic_movies</item>
+        <item>@string/topic_music</item>
+        <item>@string/topic_tv</item>
+        <item>@string/topic_games</item>
+    </string-array>
+    <string-array name="topics_offline">
+        <item>@string/topic_breaking_news</item>
+        <item>@string/topic_sports</item>
+        <item>@string/topic_entertainment</item>
+        <item>@string/topic_business</item>
+        <item>@string/topic_science</item>
+        <item>@string/topic_technology</item>
+    </string-array>
+</resources>

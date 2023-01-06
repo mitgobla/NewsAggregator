@@ -1,5 +1,6 @@
 package com.mitgobla.newsaggregator
 
+import android.app.job.JobInfo.NETWORK_TYPE_UNMETERED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -10,14 +11,20 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.auth.ProfileFragment
 import com.mitgobla.newsaggregator.frontpage.FrontPageFragment
-import com.mitgobla.newsaggregator.topics.TopicViewModel
-import com.mitgobla.newsaggregator.topics.TopicViewModelFactory
-import com.mitgobla.newsaggregator.topics.TopicsApplication
-import com.mitgobla.newsaggregator.topics.TopicsFragment
+import com.mitgobla.newsaggregator.service.NewsApiWorker
+import com.mitgobla.newsaggregator.topics.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +33,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Setup the API worker to run periodically
+        val periodicApiWorkerConstraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val periodicApiWorkRequest = PeriodicWorkRequestBuilder<NewsApiWorker>(30, TimeUnit.MINUTES).setConstraints(periodicApiWorkerConstraints).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("backgroundApiTask", ExistingPeriodicWorkPolicy.KEEP,periodicApiWorkRequest)
+
+        // If we are logged in, make sure we have the topics in the user database
+        TopicInitializer.setupTopics(this)
 
         // set activity layout to main
         setContentView(R.layout.activity_main)

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mitgobla.newsaggregator.R
 
-class TopicListAdapter(private var clickListener : ((Topic) -> Unit)) : ListAdapter<Topic, TopicListAdapter.TopicViewHolder>(TopicComparator()) {
+class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) -> Unit)) : ListAdapter<Topic, TopicListAdapter.TopicViewHolder>(TopicComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicViewHolder {
         return TopicViewHolder.create(parent)
@@ -24,28 +24,30 @@ class TopicListAdapter(private var clickListener : ((Topic) -> Unit)) : ListAdap
 
     override fun onBindViewHolder(holder: TopicViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(current.id, current.topic, current.favourite, current.notify, current.readCount, current.required, clickListener)
-
-        holder.topicItemFavouriteView.isEnabled = !current.required
+        holder.bind(current.topic, current.favourite, current.notify, clickListener)
     }
 
     class TopicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val topicItemTextView: AppCompatTextView = itemView.findViewById(R.id.topicItemText)
-        val topicItemFavouriteView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemStar)
+        private val topicItemFavouriteView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemStar)
         private val topicItemNotifyView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemNotify)
 
-        fun bind(rowid: Int, text: String, favourite: Boolean, notify: Boolean, readCount: Int, required: Boolean, clickListener: ((Topic) -> Unit)) {
+        fun bind(text: String?, favourite: Boolean, notify: Boolean, clickListener: ((String?, Boolean, Boolean) -> Unit)) {
             topicItemTextView.text = text // Set the text to the topic
             topicItemTextView.contentDescription = text // Also set the content description to the topic, for accessibility
             topicItemFavouriteView.isChecked = favourite
             topicItemNotifyView.isChecked = notify
 
 
+            // Click Listener arguments
+            // 1: String = Topic name
+            // 2: Boolean = Favourite
+            // 3: Boolean = Notify
             topicItemFavouriteView.setOnCheckedChangeListener { _, state ->
-                clickListener.invoke(Topic(rowid, text, state, notify, readCount, required))
+                clickListener.invoke(text, state, notify)
             }
             topicItemNotifyView.setOnCheckedChangeListener { _, state ->
-                clickListener.invoke(Topic(rowid, text, favourite, state, readCount, required))
+                clickListener.invoke(text, favourite, state)
             }
         }
 
@@ -58,9 +60,30 @@ class TopicListAdapter(private var clickListener : ((Topic) -> Unit)) : ListAdap
         }
     }
 
+    fun filter(query: String?) {
+        val filteredList = mutableListOf<Topic>()
+        if (query != null) {
+            if (query.isNotBlank()) {
+                for (topic in currentList) {
+                    if (topic.topic?.contains(query, true) == true) {
+                        filteredList.add(topic)
+                    }
+                }
+                submitList(filteredList)
+            } else {
+                submitList(currentList)
+            }
+        } else {
+            filteredList.addAll(currentList)
+        }
+        submitList(filteredList)
+    }
+
+
+
     class TopicComparator : DiffUtil.ItemCallback<Topic>() {
         override fun areItemsTheSame(oldItem: Topic, newItem: Topic): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.topic == newItem.topic
         }
 
         override fun areContentsTheSame(oldItem: Topic, newItem: Topic): Boolean {

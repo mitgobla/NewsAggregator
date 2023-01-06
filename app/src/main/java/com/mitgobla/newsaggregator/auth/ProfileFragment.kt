@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.mitgobla.newsaggregator.R
+import com.mitgobla.newsaggregator.topics.TopicInitializer
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     companion object {
@@ -98,6 +99,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
                     if (it.isSuccessful) {
+                        // Potentially a new user signed in, so we need to initialize their topics
+                        TopicInitializer.setupTopics(requireContext())
+                        // Show the user profile fragment
                         showUserFragment()
                     } else {
                         Log.d(TAG, "handleLoginResult: ${it.exception?.message}")
