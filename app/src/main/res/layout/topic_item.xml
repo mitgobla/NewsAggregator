@@ -7,7 +7,8 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="32dp"
         app:cardCornerRadius="2dp"
         app:cardElevation="3dp"
         app:cardPreventCornerOverlap="true"
@@ -18,14 +19,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/topicItemStar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@android:drawable/btn_star"
+                android:background="@android:drawable/btn_star"
                 android:checked="false"
                 android:contentDescription="@string/actionStar"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:textColor="#757575"
+                android:textSize="0sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/topicItemText"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,17 +42,26 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:text="@string/topicPlaceholder"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/topicItemNotify"
                 app:layout_constraintStart_toEndOf="@+id/topicItemStar"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatCheckBox
+            <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/topicItemNotify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:button="@drawable/ic_toggle_notifications"
+                android:background="@drawable/ic_toggle_notifications"
                 android:checked="true"
+                android:contentDescription="@string/notifyDescription"
+                android:gravity="center|center_vertical"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:text="@null"
+                android:textOff="@null"
+                android:textOn="@null"
+                android:textSize="0sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

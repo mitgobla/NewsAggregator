@@ -17,7 +17,7 @@
     <string name="commentAction">Comment</string>
     <string name="bookmarkAction">Bookmark</string>
     <string name="shareAction">Share</string>
-    <string name="actionStar">Select</string>
+    <string name="actionStar">Favourite</string>
     <string name="topicPlaceholder">News Topic</string>
     <string name="commentNamePlaceholder">Comment written by Name Name</string>
     <string name="profileNamePlaceholder">%s\'s Profile</string>
@@ -34,4 +34,5 @@
     <string name="login">Login with Google</string>
     <string name="loginDescription">To bookmark articles, and track your reading metrics, login using Google.</string>
     <string name="signOut">Sign Out</string>
+    <string name="notifyDescription">Toggle Notification</string>
 </resources>

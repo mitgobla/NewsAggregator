@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.mitgobla.newsaggregator.auth.ProfileFragment
 import com.mitgobla.newsaggregator.frontpage.FrontPageFragment
 import com.mitgobla.newsaggregator.topics.TopicViewModel
@@ -66,7 +67,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.profileAction -> {
                     setCurrentFragment(profileFragment)
                     searchButtonVisible = false
-                    signOutButtonVisible = true
+                    // if user is signed in, show sign out button
+                    val firebaseAuth = FirebaseAuth.getInstance()
+                    if (firebaseAuth.currentUser != null) {
+                        signOutButtonVisible = true
+                    }
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {

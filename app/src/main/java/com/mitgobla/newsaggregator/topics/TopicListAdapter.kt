@@ -8,6 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.core.view.isVisible
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -22,25 +24,28 @@ class TopicListAdapter(private var clickListener : ((Topic) -> Unit)) : ListAdap
 
     override fun onBindViewHolder(holder: TopicViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(current.id, current.topic, current.favourite, current.notify, clickListener)
+        holder.bind(current.id, current.topic, current.favourite, current.notify, current.readCount, current.required, clickListener)
+
+        holder.topicItemFavouriteView.isEnabled = !current.required
     }
 
     class TopicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val topicItemTextView: AppCompatTextView = itemView.findViewById(R.id.topicItemText)
-        private val topicItemFavouriteView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemStar)
-        private val topicItemNotifyView: AppCompatCheckBox = itemView.findViewById(R.id.topicItemNotify)
+        val topicItemFavouriteView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemStar)
+        private val topicItemNotifyView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemNotify)
 
-        fun bind(rowid: Int, text: String, favourite: Boolean, notify: Boolean, clickListener: ((Topic) -> Unit)) {
-            topicItemTextView.text = text
+        fun bind(rowid: Int, text: String, favourite: Boolean, notify: Boolean, readCount: Int, required: Boolean, clickListener: ((Topic) -> Unit)) {
+            topicItemTextView.text = text // Set the text to the topic
+            topicItemTextView.contentDescription = text // Also set the content description to the topic, for accessibility
             topicItemFavouriteView.isChecked = favourite
             topicItemNotifyView.isChecked = notify
 
-            topicItemFavouriteView.setOnCheckedChangeListener { _, state ->
-                clickListener.invoke(Topic(rowid, text, state, notify))
-            }
 
+            topicItemFavouriteView.setOnCheckedChangeListener { _, state ->
+                clickListener.invoke(Topic(rowid, text, state, notify, readCount, required))
+            }
             topicItemNotifyView.setOnCheckedChangeListener { _, state ->
-                clickListener.invoke(Topic(rowid, text, favourite, state))
+                clickListener.invoke(Topic(rowid, text, favourite, state, readCount, required))
             }
         }
 

@@ -50,7 +50,7 @@ android {
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     def coroutines_version = '1.6.4'
     def room_version = '2.4.3'
     def lifecycle_version = '2.5.1'
@@ -81,7 +81,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     // Moshi for JSON parsing
-    implementation 'com.squareup.moshi:moshi-kotlin:1.13.0'
+    implementation 'com.squareup.moshi:moshi:1.13.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.13.0'
 
     // Retrofit for API calls with Moshi Converter
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
