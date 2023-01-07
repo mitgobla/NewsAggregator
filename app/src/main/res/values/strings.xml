@@ -1,5 +1,5 @@
 <resources>
-    <string name="appName">News App Name</string>
+    <string name="appName">Newsify</string>
     <string name="search">Search</string>
     <string name="settings">Settings</string>
     <string name="frontPageAction">Home</string>
@@ -32,7 +32,10 @@
     <string name="profileAction">Profile</string>
     <string name="metrics">Your Metrics</string>
     <string name="login">Login with Google</string>
-    <string name="loginDescription">To bookmark articles, and track your reading metrics, login using Google.</string>
+    <string name="loginDescription">To favourite topics, bookmark articles, and track your reading metrics, login using Google.</string>
     <string name="signOut">Sign Out</string>
     <string name="notifyDescription">Toggle Notification</string>
+    <string name="shareDescription">Share article using</string>
+    <string name="articleBy">Article by %s</string>
+    <string name="notificationInfo">You will be notified when new articles are published for this topic</string>
 </resources>

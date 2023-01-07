@@ -4,6 +4,7 @@ import android.app.job.JobInfo.NETWORK_TYPE_UNMETERED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.work.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private var signOutButtonVisible = false
 
     private var currentFragment: Int = 0
+    private lateinit var authListener: FirebaseAuth.AuthStateListener
+    private lateinit var bottomNavigationBar: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +42,9 @@ class MainActivity : AppCompatActivity() {
             .setRequiresBatteryNotLow(true)
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-        val periodicApiWorkRequest = PeriodicWorkRequestBuilder<NewsApiWorker>(30, TimeUnit.MINUTES).setConstraints(periodicApiWorkerConstraints).build()
+        val periodicApiWorkRequest = PeriodicWorkRequestBuilder<NewsApiWorker>(30, TimeUnit.MINUTES).setConstraints(periodicApiWorkerConstraints)
+            .setInputData(Data.Builder().putBoolean("periodic", true).build())
+            .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("backgroundApiTask", ExistingPeriodicWorkPolicy.KEEP,periodicApiWorkRequest)
 
         // If we are logged in, make sure we have the topics in the user database
@@ -53,12 +59,24 @@ class MainActivity : AppCompatActivity() {
         searchButtonVisible = false
 
         // values for fragments, that are used as tabs in the bottom navigation
-        val fragments = listOf(FrontPageFragment(), TopicsFragment(), MapFragment(), ProfileFragment())
+        val fragments = listOf(FrontPageFragment(), TopicsFragment(), ProfileFragment())
 
         currentFragment = savedInstanceState?.getInt("currentFragment") ?: 0
         setCurrentFragment(fragments[currentFragment])
 
-        val bottomNavigationBar = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationBar = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+
+        authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                Log.d("MainActivity", "onAuthStateChanged:signed_out")
+            } else {
+                Log.d("MainActivity", "onAuthStateChanged:signed_in:" + user.uid)
+            }
+            setupBottomNavigation()
+        }
+        FirebaseAuth.getInstance().addAuthStateListener(authListener)
+
         bottomNavigationBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.homeAction -> {
@@ -75,22 +93,13 @@ class MainActivity : AppCompatActivity() {
                     signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
-                R.id.mapAction -> {
-                    setCurrentFragment(fragments[2])
-                    currentFragment = 2
-                    searchButtonVisible = false
-                    signOutButtonVisible = false
-                    return@setOnNavigationItemSelectedListener true
-                }
                 R.id.profileAction -> {
-                    setCurrentFragment(fragments[3])
+                    setCurrentFragment(fragments[2])
                     currentFragment = 3
                     searchButtonVisible = false
                     // if user is signed in, show sign out button
-                    val firebaseAuth = FirebaseAuth.getInstance()
-                    if (firebaseAuth.currentUser != null) {
-                        signOutButtonVisible = true
-                    }
+                    val user = GoogleSignIn.getLastSignedInAccount(this)
+                    signOutButtonVisible = user != null
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {
@@ -99,6 +108,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
+        val user = GoogleSignIn.getLastSignedInAccount(this)
+        bottomNavigationBar.menu.findItem(R.id.topicsAction).isVisible = user != null
     }
 
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
@@ -119,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate((R.menu.toolbar_front_page), menu)
@@ -129,6 +145,11 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putBoolean("searchButtonVisible", searchButtonVisible)
         outState.putBoolean("signOutButtonVisible", signOutButtonVisible)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseAuth.getInstance().removeAuthStateListener(authListener)
     }
 
 }

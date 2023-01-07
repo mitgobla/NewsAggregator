@@ -1,13 +1,20 @@
 package com.mitgobla.newsaggregator.service
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings.Global.getString
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.mitgobla.newsaggregator.MainActivity
 import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.database.Article
 import com.mitgobla.newsaggregator.database.ArticleDatabase
@@ -39,19 +46,19 @@ class NewsApiWorker(context: Context, params: WorkerParameters) : CoroutineWorke
                 topics.add(topic)
                 Log.i(TAG, "Pulled favourite topic: ${topic.topic}")
             }
-            Log.i(TAG, "Pulled ${topics.size} topics ($topics)")
-            return pullArticles(topics)
+            Log.d(TAG, "Pulled ${topics.size} topics ($topics)")
+            return pullArticles(topics, inputData.getBoolean("periodic", false))
         } else {
             val topicsRef = applicationContext.resources.getStringArray(R.array.topics_offline)
             for (topic in topicsRef) {
                 topics.add(Topic(topic))
             }
             Log.e(TAG, "doWork: pulled topics from default")
-            return pullArticles(topics)
+            return pullArticles(topics, inputData.getBoolean("periodic", false))
         }
     }
 
-    private suspend fun pullArticles(topics: ArrayList<Topic>): Result {
+    private suspend fun pullArticles(topics: ArrayList<Topic>, periodic: Boolean): Result {
         val database = ArticleDatabase.getDatabase(applicationContext)
 
         Log.d(TAG, "doWork: topics to pull: $topics")
@@ -76,7 +83,13 @@ class NewsApiWorker(context: Context, params: WorkerParameters) : CoroutineWorke
                 if (response.body() != null) {
                     val articles = response.body()!!.articles
                     for (article in articles) {
-                        database.articleDao().insert(articleResponseToArticle(topic, article))
+                        val alreadyExists = database.articleDao().exists(article.url)
+                        if (!alreadyExists) {
+                            database.articleDao().insert(articleResponseToArticle(topic, article))
+                            if (periodic && topic.notify) {
+                                newArticleNotification(article.title, article.description)
+                            }
+                        }
                         Log.d(TAG, "doWork: inserted article: ${article.title} for topic ${topic.topic}")
                     }
                     Log.i(TAG, "doWork: inserted articles for topic ${topic.topic}")
@@ -104,6 +117,23 @@ class NewsApiWorker(context: Context, params: WorkerParameters) : CoroutineWorke
                 sourceUrl = article.source.url
             )
 
+    }
+
+    // send notification to user
+    private fun newArticleNotification(title: String, description: String) {
+        val notificationIntent = PendingIntent.getActivity(applicationContext, 0, Intent(applicationContext, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(applicationContext, "news_aggregator")
+                .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                .setContentTitle(title)
+                .setContentText(description)
+                .setContentIntent(notificationIntent)
+                .setSubText(applicationContext.resources.getString(R.string.appName))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(applicationContext)) {
+            notify(1, builder.build())
+        }
     }
 
 }

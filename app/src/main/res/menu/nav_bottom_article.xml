@@ -3,13 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/commentAction"
-        android:icon="@android:drawable/stat_notify_chat"
-        android:title="@string/commentAction"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/bookmarkAction"
-        android:icon="@android:drawable/ic_menu_save"
+        android:checkable="true"
+        android:checked="false"
+        android:icon="@drawable/ic_baseline_bookmark_border_24"
         android:title="@string/bookmarkAction"
         app:showAsAction="ifRoom" />
     <item

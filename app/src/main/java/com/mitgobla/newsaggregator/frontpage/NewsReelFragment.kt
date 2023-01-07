@@ -2,6 +2,7 @@ package com.mitgobla.newsaggregator.frontpage
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -38,7 +39,9 @@ class NewsReelFragment(val topic: Topic) : Fragment(R.layout.fragment_news_reel)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        newsReelAdapter = NewsReelAdapter(topic)
+        newsReelAdapter = NewsReelAdapter(topic) { article, topic ->
+            onArticleClicked(article, topic)
+        }
         newsReelAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         newsReelRecyclerView = view.findViewById(R.id.newsReelRecyclerView)
         newsReelRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -51,5 +54,17 @@ class NewsReelFragment(val topic: Topic) : Fragment(R.layout.fragment_news_reel)
             }
         }
         Log.i("NewsReelFragment", "number of articles: ${newsReelAdapter.itemCount} for topic $topicName")
+    }
+
+    private fun onArticleClicked(article: Article, topic: Topic) {
+        val intent = Intent(context, NewsArticleActivity::class.java)
+        intent.putExtra("articleTopic", topic.topic)
+        intent.putExtra("articleTitle", article.title)
+        intent.putExtra("articleImageUrl", article.imageUrl)
+        intent.putExtra("articleUrl", article.url)
+        intent.putExtra("articleContent", article.content)
+        intent.putExtra("articleAuthorName", article.sourceName)
+        intent.putExtra("articleAuthorUrl", article.sourceUrl)
+        startActivity(intent)
     }
 }

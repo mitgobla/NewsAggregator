@@ -39,6 +39,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -65,6 +66,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         childFragmentManager.beginTransaction()
             .replace(R.id.profileFragmentContainerView, loginFragment)
             .commit()
+        // hide sign out menu item
+
     }
 
 
@@ -81,6 +84,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun signOut() {
         googleSignInClient.signOut()
+        firebaseAuth.signOut()
         showLoginFragment()
     }
 

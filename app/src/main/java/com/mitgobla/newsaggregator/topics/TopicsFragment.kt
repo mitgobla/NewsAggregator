@@ -65,7 +65,12 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
             val db = Firebase.firestore
             val topicRef = db.collection("topics").document(topic)
             topicRef.update("favourite", favourite)
-            topicRef.update("notify", notify)
+            if (favourite) {
+                topicRef.update("notify", notify)
+                Toast.makeText(context, R.string.notificationInfo, Toast.LENGTH_SHORT).show()
+            } else {
+                topicRef.update("notify", false)
+            }
         }
     }
 

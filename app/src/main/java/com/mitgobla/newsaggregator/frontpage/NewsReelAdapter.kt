@@ -19,7 +19,7 @@ import com.mitgobla.newsaggregator.network.ArticleResponse
 import com.mitgobla.newsaggregator.network.NewsApiResponse
 import com.mitgobla.newsaggregator.topics.Topic
 
-class NewsReelAdapter(private var topic: Topic) : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
+class NewsReelAdapter(private var topic: Topic, private var clickListener: (Article, Topic) -> Unit) : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsReelViewHolder {
         // log the amount of items in the recycler view
@@ -29,7 +29,7 @@ class NewsReelAdapter(private var topic: Topic) : ListAdapter<Article, NewsReelA
 
     override fun onBindViewHolder(holder: NewsReelViewHolder, position: Int) {
         val current = getItem(position)
-        holder.bind(position, current)
+        holder.bind(position, current, topic, clickListener)
     }
 
     class NewsReelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,7 +37,11 @@ class NewsReelAdapter(private var topic: Topic) : ListAdapter<Article, NewsReelA
         private val newsItemHeader: AppCompatTextView = itemView.findViewById(R.id.newsItemHeader)
         private val newsItemBrief: AppCompatTextView = itemView.findViewById(R.id.newsItemBrief)
 
-        fun bind(position: Int, article: Article) {
+        fun bind(position: Int, article: Article, topic: Topic, clickListener: (Article, Topic) -> Unit) {
+            itemView.setOnClickListener {
+                clickListener.invoke(article, topic)
+            }
+
             newsItemHeader.text = article.title
             newsItemHeader.contentDescription = article.title
             newsItemBrief.text = article.description

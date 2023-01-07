@@ -13,11 +13,6 @@
         android:title="@string/topicsPageAction"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/mapAction"
-        android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/map"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/profileAction"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="@string/profileAction"

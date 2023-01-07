@@ -37,6 +37,7 @@ class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) 
             topicItemTextView.contentDescription = text // Also set the content description to the topic, for accessibility
             topicItemFavouriteView.isChecked = favourite
             topicItemNotifyView.isChecked = notify
+            topicItemNotifyView.isVisible = favourite // Only show the notify toggle if the topic is a favourite
 
 
             // Click Listener arguments
