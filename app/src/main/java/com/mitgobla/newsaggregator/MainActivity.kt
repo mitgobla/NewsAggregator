@@ -3,6 +3,7 @@ package com.mitgobla.newsaggregator
 import android.app.job.JobInfo.NETWORK_TYPE_UNMETERED
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,11 +12,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -30,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private var searchButtonVisible = false
     private var signOutButtonVisible = false
+
+    private var currentFragment: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,37 +52,39 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         searchButtonVisible = false
 
-        // values for fragments
-        val frontPageFragment = FrontPageFragment()
-        val mapFragment = MapFragment()
-        val topicsFragment = TopicsFragment()
-        val profileFragment = ProfileFragment()
+        // values for fragments, that are used as tabs in the bottom navigation
+        val fragments = listOf(FrontPageFragment(), TopicsFragment(), MapFragment(), ProfileFragment())
 
-        setCurrentFragment(frontPageFragment)
+        currentFragment = savedInstanceState?.getInt("currentFragment") ?: 0
+        setCurrentFragment(fragments[currentFragment])
 
         val bottomNavigationBar = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNavigationBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.homeAction -> {
-                    setCurrentFragment(frontPageFragment)
+                    setCurrentFragment(fragments[0])
+                    currentFragment = 0
                     searchButtonVisible = false
                     signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.topicsAction -> {
-                    setCurrentFragment(topicsFragment)
+                    setCurrentFragment(fragments[1])
+                    currentFragment = 1
                     searchButtonVisible = true
                     signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.mapAction -> {
-                    setCurrentFragment(mapFragment)
+                    setCurrentFragment(fragments[2])
+                    currentFragment = 2
                     searchButtonVisible = false
                     signOutButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.profileAction -> {
-                    setCurrentFragment(profileFragment)
+                    setCurrentFragment(fragments[3])
+                    currentFragment = 3
                     searchButtonVisible = false
                     // if user is signed in, show sign out button
                     val firebaseAuth = FirebaseAuth.getInstance()
@@ -93,6 +94,7 @@ class MainActivity : AppCompatActivity() {
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {
+                    currentFragment = 0
                     return@setOnNavigationItemSelectedListener false
                 }
             }
@@ -121,6 +123,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate((R.menu.toolbar_front_page), menu)
         return true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putBoolean("searchButtonVisible", searchButtonVisible)
+        outState.putBoolean("signOutButtonVisible", signOutButtonVisible)
     }
 
 }

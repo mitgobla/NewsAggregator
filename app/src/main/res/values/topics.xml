@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="topic_breaking_news">Breaking News</string>
+    <string name="topic_breaking_news">Breaking</string>
     <string name="topic_sports">Sports</string>
     <string name="topic_entertainment">Entertainment</string>
     <string name="topic_business">Business</string>

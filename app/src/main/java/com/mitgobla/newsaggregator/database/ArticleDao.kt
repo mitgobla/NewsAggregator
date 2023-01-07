@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArticleDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(article: Article)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg articles: Article)
 
     @Query("SELECT topic FROM articles_table GROUP BY topic")

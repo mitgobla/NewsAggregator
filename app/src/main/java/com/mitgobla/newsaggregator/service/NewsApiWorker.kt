@@ -16,6 +16,8 @@ import com.mitgobla.newsaggregator.network.NewsApiInterface
 import com.mitgobla.newsaggregator.network.NewsApiResponse
 import com.mitgobla.newsaggregator.topics.Topic
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 
@@ -23,48 +25,63 @@ private const val TAG = "NewsApiWorker"
 class NewsApiWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val database = ArticleDatabase.getDatabase(applicationContext)
-
-        val topics = mutableListOf<Topic>()
+        val topics = arrayListOf<Topic>()
         val user = GoogleSignIn.getLastSignedInAccount(applicationContext)
         if (user != null) {
             val db = Firebase.firestore
             val topicsRef = db.collection("topics").whereEqualTo("favourite", true)
-            topicsRef.get().addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val topic = document.toObject(Topic::class.java)
-                    topics.add(topic)
-                }
+
+            // get and wait for success
+            val topicsSnapshot = topicsRef.get().await()
+            Log.d(TAG, "Got topics from user")
+            for (document in topicsSnapshot) {
+                val topic = document.toObject(Topic::class.java)
+                topics.add(topic)
+                Log.i(TAG, "Pulled favourite topic: ${topic.topic}")
             }
-            Log.i(TAG, "doWork: pulled topics from user")
+            Log.i(TAG, "Pulled ${topics.size} topics ($topics)")
+            return pullArticles(topics)
         } else {
             val topicsRef = applicationContext.resources.getStringArray(R.array.topics_offline)
             for (topic in topicsRef) {
                 topics.add(Topic(topic))
             }
-            Log.i(TAG, "doWork: pulled topics from default")
+            Log.e(TAG, "doWork: pulled topics from default")
+            return pullArticles(topics)
         }
+    }
 
+    private suspend fun pullArticles(topics: ArrayList<Topic>): Result {
+        val database = ArticleDatabase.getDatabase(applicationContext)
+
+        Log.d(TAG, "doWork: topics to pull: $topics")
         for (topic in topics) {
-            // sleep for 1 second to avoid rate limiting
+            Log.d(TAG, "doWork: pulling articles for topic: ${topic.topic}")
+            // sleep for 3 seconds to avoid rate limiting
             withContext(Dispatchers.IO) {
-                Thread.sleep(2000)
+                Thread.sleep(5000)
             }
-            val apiInterface: Call<NewsApiResponse> = if (topic.topic == applicationContext.getString(R.string.breaking)) {
+            val apiInterface: Call<NewsApiResponse> = if (topic.topic == applicationContext.getString(R.string.topic_breaking_news)) {
                 NewsApiInterface.create().getTopHeadlines(applicationContext.getString(R.string.gnews_token))
             } else {
                 NewsApiInterface.create().searchByQuery(topic.topic!!, applicationContext.getString(R.string.gnews_token))
             }
 
+            // call the api and wait for the response
             val response = apiInterface.execute()
+
+            Log.d(TAG, "doWork: response: $response")
 
             if (response.isSuccessful) {
                 if (response.body() != null) {
                     val articles = response.body()!!.articles
                     for (article in articles) {
                         database.articleDao().insert(articleResponseToArticle(topic, article))
+                        Log.d(TAG, "doWork: inserted article: ${article.title} for topic ${topic.topic}")
                     }
                     Log.i(TAG, "doWork: inserted articles for topic ${topic.topic}")
+                } else {
+                    Log.e(TAG, "doWork: response body is null")
                 }
             } else {
                 Log.e(TAG, "doWork: ${response.errorBody().toString()}")

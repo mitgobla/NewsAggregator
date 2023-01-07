@@ -33,6 +33,7 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
         val topicAdapter = TopicListAdapter{ topic, favourite, notify ->
             updateTopic(topic, favourite, notify)
         }
+        topicAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         val db = Firebase.firestore
         val topicsRef = db.collection("topics").orderBy("favourite", Query.Direction.DESCENDING).orderBy("notify", Query.Direction.DESCENDING).orderBy("topic")
@@ -48,9 +49,8 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
             .addOnFailureListener { exception ->
                 Log.w("TopicsFragment", "Error getting documents.", exception)
             }
-
-        topicRecyclerView.adapter = topicAdapter
         topicRecyclerView.layoutManager = LinearLayoutManager(view.context)
+        topicRecyclerView.adapter = topicAdapter
 
         searchQuery.observe(viewLifecycleOwner, Observer { query ->
             topicAdapter.filter(query)

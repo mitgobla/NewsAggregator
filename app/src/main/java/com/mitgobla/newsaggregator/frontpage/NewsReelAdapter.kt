@@ -1,6 +1,7 @@
 package com.mitgobla.newsaggregator.frontpage
 
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +17,13 @@ import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.database.Article
 import com.mitgobla.newsaggregator.network.ArticleResponse
 import com.mitgobla.newsaggregator.network.NewsApiResponse
+import com.mitgobla.newsaggregator.topics.Topic
 
-class NewsReelAdapter : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
+class NewsReelAdapter(private var topic: Topic) : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsReelViewHolder {
+        // log the amount of items in the recycler view
+        Log.i("NewsReelAdapter", "onCreateViewHolder: $itemCount for ${topic.topic}")
         return NewsReelViewHolder.create(parent)
     }
 
