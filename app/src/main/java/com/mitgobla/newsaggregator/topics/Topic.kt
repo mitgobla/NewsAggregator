@@ -1,11 +1,8 @@
 package com.mitgobla.newsaggregator.topics
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Fts4
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
-
+/**
+ * Stores information about a topic.
+ */
 data class Topic(
     val topic: String? = null,
     var favourite: Boolean = false,

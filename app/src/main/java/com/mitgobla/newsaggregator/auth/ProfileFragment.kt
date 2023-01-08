@@ -1,19 +1,10 @@
 package com.mitgobla.newsaggregator.auth
 
-import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -25,6 +16,11 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.topics.TopicInitializer
 
+/**
+ * Fragment for the profile page.
+ * It will display [LoginFragment] if the user is not logged in,
+ * and [UserFragment] if the user is logged in.
+ */
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     companion object {
         const val TAG = "ProfileFragment"
@@ -53,7 +49,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // check if user is signed in
+        // Check if user is signed in
+        // and display the appropriate fragment
         val account = GoogleSignIn.getLastSignedInAccount(requireContext())
         if (account != null) {
             showUserFragment()
@@ -62,32 +59,48 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
+    /**
+     * Show the login fragment.
+     */
     private fun showLoginFragment() {
         childFragmentManager.beginTransaction()
             .replace(R.id.profileFragmentContainerView, loginFragment)
             .commit()
-        // hide sign out menu item
-
     }
 
-
+    /**
+     * Show the user fragment.
+     */
     private fun showUserFragment() {
         childFragmentManager.beginTransaction()
             .replace(R.id.profileFragmentContainerView, userFragment)
             .commit()
     }
 
+    /**
+     * Start the Google sign-in intent, which allows the user
+     * to sign in with a Google account.
+     */
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, SIGN_IN_RESULT_CODE)
     }
 
+    /**
+     * Sign out the user.
+     * It will notify any authentication observers that the user has signed out.
+     */
     private fun signOut() {
         googleSignInClient.signOut()
         firebaseAuth.signOut()
         showLoginFragment()
     }
 
+    /**
+     * Handle the result of the Google sign-in intent.
+     * If the sign-in was successful, it will authenticate the user with Firebase.
+     */
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SIGN_IN_RESULT_CODE) {
@@ -96,6 +109,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
+    /**
+     * Handle user sign-in result.
+     * If the sign-in was successful, it will authenticate the user with Firebase.
+     * Otherwise, it will display an error message in the form of a Toast.
+     */
     private fun handleLoginResult(task: Task<GoogleSignInAccount>) {
         try {
             val account = task.getResult(ApiException::class.java)
@@ -108,12 +126,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         // Show the user profile fragment
                         showUserFragment()
                     } else {
-                        Log.d(TAG, "handleLoginResult: ${it.exception?.message}")
+                        Toast.makeText(requireContext(),
+                            context?.getString(R.string.unsuccessfulLogin, it.exception?.message), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         } catch (e: ApiException) {
-            Log.w(TAG, "Google sign in failed", e)
+            Toast.makeText(requireContext(),
+                context?.getString(R.string.unsuccessfulLogin, e.message), Toast.LENGTH_SHORT).show()
         }
     }
 

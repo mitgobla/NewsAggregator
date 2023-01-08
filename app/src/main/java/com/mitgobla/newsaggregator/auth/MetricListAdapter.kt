@@ -10,8 +10,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mitgobla.newsaggregator.R
 
+/**
+ * Adapter for the metric [RecyclerView] in [UserFragment].
+ * Takes a maximum value, which is the highest count in the metrics. This way the progress
+ * bars will be scaled to the most read topic.
+ */
 class MetricListAdapter(private val maxValue: Int) : ListAdapter<Metric, MetricListAdapter.MetricViewHolder>(MetricComparator()) {
 
+    /**
+     * Takes data from the [Metric] and binds it to the views.
+     */
     class MetricViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val metricName = itemView.findViewById<AppCompatTextView>(R.id.metricName)
         private val metricProgress = itemView.findViewById<ProgressBar>(R.id.metricProgress)
@@ -33,6 +41,9 @@ class MetricListAdapter(private val maxValue: Int) : ListAdapter<Metric, MetricL
         }
     }
 
+    /**
+     * Compare if the items are the same, to avoid unnecessary updates
+     */
     class MetricComparator : DiffUtil.ItemCallback<Metric>() {
         override fun areItemsTheSame(oldItem: Metric, newItem: Metric): Boolean {
             return oldItem === newItem

@@ -9,8 +9,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mitgobla.newsaggregator.R
 
+/**
+ * Adapter for the comments RecyclerView in the NewsArticleActivity.
+ */
 class CommentsAdapter : ListAdapter<Comment,CommentsAdapter.CommentsViewHolder>(CommentComparator()) {
 
+    /**
+     * Creates a new ViewHolder for the RecyclerView, where the comment data
+     * is bound to the elements in the comment layout.
+     */
     class CommentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val commentAuthor: AppCompatTextView = itemView.findViewById(R.id.commentAuthor)
         private val commentContent: AppCompatTextView = itemView.findViewById(R.id.commentContent)
@@ -31,6 +38,9 @@ class CommentsAdapter : ListAdapter<Comment,CommentsAdapter.CommentsViewHolder>(
         }
     }
 
+    /**
+     * Compare if the items are the same, to avoid unnecessary updates
+     */
     class CommentComparator : DiffUtil.ItemCallback<Comment>() {
         override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean {
             return oldItem === newItem

@@ -6,10 +6,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.R
 
+/**
+ * Helper class to ensure user has topics in their database
+ */
 class TopicInitializer {
     companion object {
         fun setupTopics(context: Context) {
-            // check if user is logged in
+            // Check if user is logged in
             val user = GoogleSignIn.getLastSignedInAccount(context)
             if (user != null) {
                 val db = Firebase.firestore

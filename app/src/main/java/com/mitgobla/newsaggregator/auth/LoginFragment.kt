@@ -6,8 +6,10 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import com.mitgobla.newsaggregator.R
 
-// pass in a function to be called when the sign in button is clicked
-
+/**
+ * Fragment for the login screen.
+ * Takes a click listener to run the Google sign-in intent.
+ */
 class LoginFragment(private val signInWithGoogle: () -> Unit) : Fragment(R.layout.fragment_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

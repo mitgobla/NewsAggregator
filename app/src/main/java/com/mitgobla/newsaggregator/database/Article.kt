@@ -3,8 +3,11 @@ package com.mitgobla.newsaggregator.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.squareup.moshi.Json
 
+/**
+ * Entity that describes an article.
+ * Articles are stored in a local database for caching.
+ */
 @Entity(tableName = "articles_table")
 data class Article (
     @PrimaryKey @ColumnInfo(name = "url") val url: String,

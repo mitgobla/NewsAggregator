@@ -1,21 +1,20 @@
 package com.mitgobla.newsaggregator.topics
 
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.core.view.isVisible
-import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mitgobla.newsaggregator.R
 
+/**
+ * Adapter for the list of topics RecyclerView in TopicsFragment.
+ * Takes a click listener to update the topic when the favourite or notify toggle buttons are clicked.
+ */
 class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) -> Unit)) : ListAdapter<Topic, TopicListAdapter.TopicViewHolder>(TopicComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopicViewHolder {
@@ -27,6 +26,10 @@ class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) 
         holder.bind(current.topic, current.favourite, current.notify, clickListener)
     }
 
+    /**
+     * ViewHolder for a topic that binds the data of the topic to their respective views
+     * Binds the click listener to the favourite and notify toggle buttons
+     */
     class TopicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val topicItemTextView: AppCompatTextView = itemView.findViewById(R.id.topicItemText)
         private val topicItemFavouriteView: AppCompatToggleButton = itemView.findViewById(R.id.topicItemStar)
@@ -61,6 +64,9 @@ class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) 
         }
     }
 
+    /**
+     * Filter the RecyclerView to only show topics that contain the search query
+     */
     fun filter(query: String?) {
         val filteredList = mutableListOf<Topic>()
         if (query != null) {
@@ -81,7 +87,9 @@ class TopicListAdapter(private var clickListener : ((String?, Boolean, Boolean) 
     }
 
 
-
+    /**
+     * Compare if the items are the same, to avoid unnecessary updates
+     */
     class TopicComparator : DiffUtil.ItemCallback<Topic>() {
         override fun areItemsTheSame(oldItem: Topic, newItem: Topic): Boolean {
             return oldItem.topic == newItem.topic

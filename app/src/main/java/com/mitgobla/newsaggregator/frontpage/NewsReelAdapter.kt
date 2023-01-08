@@ -1,7 +1,6 @@
 package com.mitgobla.newsaggregator.frontpage
 
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +14,14 @@ import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.database.Article
-import com.mitgobla.newsaggregator.network.ArticleResponse
-import com.mitgobla.newsaggregator.network.NewsApiResponse
 import com.mitgobla.newsaggregator.topics.Topic
 
+/**
+ * Adapter for the RecyclerView in the NewsReelFragment.
+ */
 class NewsReelAdapter(private var topic: Topic, private var clickListener: (Article, Topic) -> Unit) : ListAdapter<Article, NewsReelAdapter.NewsReelViewHolder>(NewsReelComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsReelViewHolder {
-        // log the amount of items in the recycler view
-        Log.i("NewsReelAdapter", "onCreateViewHolder: $itemCount for ${topic.topic}")
         return NewsReelViewHolder.create(parent)
     }
 
@@ -32,6 +30,10 @@ class NewsReelAdapter(private var topic: Topic, private var clickListener: (Arti
         holder.bind(position, current, topic, clickListener)
     }
 
+    /**
+     * ViewHolder for the NewsReelAdapter, where the article data is bound to the elements in the
+     * news item layout.
+     */
     class NewsReelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val newsItemImageView: AppCompatImageView = itemView.findViewById(R.id.newsItemImageView)
         private val newsItemHeader: AppCompatTextView = itemView.findViewById(R.id.newsItemHeader)
@@ -63,6 +65,9 @@ class NewsReelAdapter(private var topic: Topic, private var clickListener: (Arti
         }
     }
 
+    /**
+     * Compare if the items are the same, to avoid unnecessary updates
+     */
     class NewsReelComparator : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
             return oldItem == newItem

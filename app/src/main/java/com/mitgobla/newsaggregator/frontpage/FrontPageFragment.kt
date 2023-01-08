@@ -1,20 +1,10 @@
 package com.mitgobla.newsaggregator.frontpage
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -22,11 +12,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.R
-import com.mitgobla.newsaggregator.service.NewsApiWorker
 import com.mitgobla.newsaggregator.topics.Topic
 import com.mitgobla.newsaggregator.topics.TopicInitializer
-import kotlin.properties.Delegates
 
+/**
+ * The fragment used for the main front page, where it will display
+ * tabs for each favourite topic (or default if not signed in) and
+ * a fragment for each tab to display the news reel for that topic.
+ */
 class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
 
     private lateinit var viewPager: ViewPager2
@@ -42,26 +35,32 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
         viewPager = view.findViewById(R.id.frontPageViewPager)
         tabLayout = view.findViewById(R.id.frontPageTabs)
 
-        // listen for authentication changes and update the topics on change
+        // Listen for authentication changes and update the topics on change
+        // For example, if the user signs in, the topics will be updated to
+        // include the user's favourite topics
         authListener = FirebaseAuth.AuthStateListener {
             checkForTopics()
         }
         FirebaseAuth.getInstance().addAuthStateListener { authListener }
     }
 
+    /**
+     * Check for topics to populate the tabs with.
+     * If the user is signed in, the topics will be the user's favourite topics.
+     * If the user is not signed in, the topics will be the default topics.
+     */
     private fun checkForTopics() {
         val account = GoogleSignIn.getLastSignedInAccount(requireContext())
         topics = arrayListOf()
         if (account != null) {
-            Log.i("FrontPageFragment", "Logged in, getting topics from database")
-            // ensure topics are initialized
+            // Ensure topics are initialized in the user's database
             TopicInitializer.setupTopics(requireContext())
             val db = Firebase.firestore
+            // Get all favourite topics for the user
             val topicsRef = db.collection("topics").whereEqualTo("favourite", true)
             topicsRef.get().addOnSuccessListener { documents ->
                 for (document in documents) {
                     val topic = document.toObject(Topic::class.java)
-                    Log.i("FrontPageFragment", "Adding Topic: $topic")
                     topics.add(topic)
                 }
                 viewPager.adapter = FrontPageAdapter(this, topics)
@@ -71,8 +70,8 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
                 viewPager.currentItem = currentTab
             }
         } else {
-            // if we are not logged in, get the topics from the default database
-            Log.i("FrontPageFragment", "Not logged in, getting topics from default database")
+            // if we are not logged in, get the default topics.
+            // Using an array from resources - prevents use of hardcoded strings.
             val topicsRef = resources.getStringArray(R.array.topics_offline)
             for (topic in topicsRef) {
                 topics.add(Topic(topic))
@@ -85,8 +84,10 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
         }
     }
 
+    /**
+     * Set the tab to the last position when the user returns.
+     */
     private fun resumeLastPosition() {
-        Log.d("FrontPageFragment", "Resuming last position $currentTab")
         tabLayout.setScrollPosition(currentTab, 0f, true)
         viewPager.currentItem = currentTab
     }
@@ -110,7 +111,6 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
     override fun onDestroyView() {
         super.onDestroyView()
         currentTab = viewPager.currentItem
-        Log.d("FrontPageFragment", "Saving current tab $currentTab")
         FirebaseAuth.getInstance().removeAuthStateListener { authListener }
     }
 

@@ -1,30 +1,26 @@
 package com.mitgobla.newsaggregator
 
-import android.app.job.JobInfo.NETWORK_TYPE_UNMETERED
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import androidx.activity.viewModels
-import androidx.appcompat.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.work.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.auth.ProfileFragment
 import com.mitgobla.newsaggregator.frontpage.FrontPageFragment
 import com.mitgobla.newsaggregator.service.NewsApiWorker
-import com.mitgobla.newsaggregator.topics.*
+import com.mitgobla.newsaggregator.topics.TopicInitializer
+import com.mitgobla.newsaggregator.topics.TopicsFragment
 import java.util.concurrent.TimeUnit
 
+/**
+ * Newsify main activity
+ */
 class MainActivity : AppCompatActivity() {
 
     private var searchButtonVisible = false
@@ -60,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.mainToolbar)
         setSupportActionBar(toolbar)
 
-
+        // Restore the state of the toolbar buttons
         searchButtonVisible = savedInstanceState?.getBoolean("searchButtonVisible") ?: false
         signOutButtonVisible = savedInstanceState?.getBoolean("signOutButtonVisible") ?: false
         refreshButtonVisible = savedInstanceState?.getBoolean("refreshButtonVisible") ?: false
@@ -71,15 +67,9 @@ class MainActivity : AppCompatActivity() {
         currentFragment = savedInstanceState?.getInt("currentFragment") ?: 0
         setCurrentFragment(fragments[currentFragment])
 
-        bottomNavigationBar = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationBar = findViewById(R.id.bottomNavigationView)
 
-        authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if (user == null) {
-                Log.d("MainActivity", "onAuthStateChanged:signed_out")
-            } else {
-                Log.d("MainActivity", "onAuthStateChanged:signed_in:" + user.uid)
-            }
+        authListener = FirebaseAuth.AuthStateListener {
             setupBottomNavigation()
         }
         FirebaseAuth.getInstance().addAuthStateListener(authListener)
@@ -121,6 +111,9 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
     }
 
+    /**
+     * Method for setting up a worker to call the API and update the local database
+     */
     private fun callApi() {
         val apiWorker = OneTimeWorkRequestBuilder<NewsApiWorker>()
             .setInputData(Data.Builder().putBoolean("periodic", false).build())
@@ -131,14 +124,19 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         val user = GoogleSignIn.getLastSignedInAccount(this)
         bottomNavigationBar.menu.findItem(R.id.topicsAction).isVisible = user != null
-        Log.d("MainActivity", "setupBottomNavigation: ${user != null}")
     }
 
+    /**
+     * Sets the currently displayed fragment
+     */
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
         replace(R.id.fragmentMain, fragment)
         commit()
     }
 
+    /**
+     * Set the visibility of the buttons in the options menu
+     */
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         super.onPrepareOptionsMenu(menu)
         val searchItem = menu?.findItem(R.id.toolbarSearch)
@@ -163,6 +161,9 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Add refresh functionality to the refresh button
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.toolbarRefresh -> {

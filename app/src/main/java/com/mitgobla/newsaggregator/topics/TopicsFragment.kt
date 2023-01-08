@@ -1,18 +1,13 @@
 package com.mitgobla.newsaggregator.topics
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.Query
@@ -20,6 +15,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mitgobla.newsaggregator.R
 
+/**
+ * Fragment for displaying the topics the user can subscribe to.
+ */
 class TopicsFragment:Fragment(R.layout.fragment_topics) {
 
     private val searchQuery = MutableLiveData<String?>()
@@ -30,11 +28,14 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
 
         val topicRecyclerView = view.findViewById<RecyclerView>(R.id.topicsRecyclerView)
 
+        // Set up the RecyclerView adapter and provides the click listener
         val topicAdapter = TopicListAdapter{ topic, favourite, notify ->
             updateTopic(topic, favourite, notify)
         }
+        // Save the state of the RecyclerView
         topicAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
+        // Get the topics from the user database
         val db = Firebase.firestore
         val topicsRef = db.collection("topics").orderBy("favourite", Query.Direction.DESCENDING).orderBy("notify", Query.Direction.DESCENDING).orderBy("topic")
         topicsRef.get()
@@ -46,12 +47,10 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
                 }
                 topicAdapter.submitList(topics)
             }
-            .addOnFailureListener { exception ->
-                Log.w("TopicsFragment", "Error getting documents.", exception)
-            }
         topicRecyclerView.layoutManager = LinearLayoutManager(view.context)
         topicRecyclerView.adapter = topicAdapter
 
+        // When the search box is updated, update the search query in the adapter
         searchQuery.observe(viewLifecycleOwner, Observer { query ->
             topicAdapter.filter(query)
         })
@@ -59,6 +58,9 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
 
     }
 
+    /**
+     * Update the state of the topic in the database
+     */
     private fun updateTopic(topic: String?, favourite: Boolean, notify: Boolean) {
         // Update the topic in the firebase database
         if (topic != null) {
@@ -76,6 +78,7 @@ class TopicsFragment:Fragment(R.layout.fragment_topics) {
 
     @Deprecated("Deprecated in Java")
     override fun onPrepareOptionsMenu(menu: Menu) {
+        // Add listeners to the search box
         val searchMenuItem = menu.findItem(R.id.toolbarSearch)
         val searchView = searchMenuItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

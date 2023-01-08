@@ -48,4 +48,5 @@
     <string name="post">Post</string>
     <string name="cancel">Cancel</string>
     <string name="metricName">%s: %d articles read</string>
+    <string name="unsuccessfulLogin">Error on login: %s</string>
 </resources>

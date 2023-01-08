@@ -3,6 +3,10 @@ package com.mitgobla.newsaggregator.database
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
+/**
+ * Factory for creating a [ArticleViewModel] with a constructor that takes a [ArticleRepository].
+ * This is used for the RecyclerView in the NewsReelFragment.
+ */
 class ArticleViewModelFactory(private val repository: ArticleRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ArticleViewModel::class.java)) {

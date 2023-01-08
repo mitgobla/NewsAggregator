@@ -13,8 +13,16 @@ import coil.transform.RoundedCornersTransformation
 import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.database.Bookmark
 
+/**
+ * Adapter for the Bookmark [RecyclerView] in [UserFragment].
+ */
 class BookmarkListAdapter(private var clickListener: (Bookmark) -> Unit) : ListAdapter<Bookmark, BookmarkListAdapter.BookmarkViewHolder>(BookmarkComparator()) {
 
+    /**
+     * The ViewHolder constructor takes the binding variable from the associated
+     * [Bookmark], which gives it access to the data.
+     * It also gives the view clickable functionality, to open the bookmark.
+     */
     class BookmarkViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val newsItemHeader = itemView.findViewById<AppCompatTextView>(R.id.newsItemHeader)
         private val newsItemImageView = itemView.findViewById<AppCompatImageView>(R.id.newsItemImageView)
@@ -46,6 +54,9 @@ class BookmarkListAdapter(private var clickListener: (Bookmark) -> Unit) : ListA
         }
     }
 
+    /**
+     * Compare if the items are the same, to avoid unnecessary updates
+     */
     class BookmarkComparator : DiffUtil.ItemCallback<Bookmark>() {
         override fun areItemsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
             return oldItem === newItem

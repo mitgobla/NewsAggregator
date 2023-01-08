@@ -25,7 +25,7 @@ class UserFragment(private var signOutClickListener: () -> Unit) : Fragment(R.la
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        // get the logged in user
+        // Get the logged in user
         val user = FirebaseAuth.getInstance().currentUser
 
         // Display the user's profile picture
@@ -61,6 +61,7 @@ class UserFragment(private var signOutClickListener: () -> Unit) : Fragment(R.la
             val metricsAdapter = MetricListAdapter(metrics.maxOf { it.count })
             metricsRecyclerView.adapter = metricsAdapter
             metricsRecyclerView.layoutManager = LinearLayoutManager(context)
+            // Metrics are reversed, so that the most read topic is at the top
             metrics.reverse()
             metricsAdapter.submitList(metrics)
 
@@ -114,6 +115,10 @@ class UserFragment(private var signOutClickListener: () -> Unit) : Fragment(R.la
         }
     }
 
+    /**
+     * Run an explicit intent to open the bookmark in the NewsArticleActivity activity.
+     * The article is populated from the stored bookmark.
+     */
     private fun onClickBookmark(bookmark: Bookmark) {
         val intent = Intent(context, NewsArticleActivity::class.java)
         intent.putExtra("articleTopic", bookmark.topic)

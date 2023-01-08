@@ -6,6 +6,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data access object for the article database.
+ * Provides methods for inserting and retrieving articles, including
+ * - Inserting a list of articles (i.e from the API)
+ * - Retrieving a list of articles from a specific topic
+ * - Checking if an article already exists in the database
+ */
 @Dao
 interface ArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
