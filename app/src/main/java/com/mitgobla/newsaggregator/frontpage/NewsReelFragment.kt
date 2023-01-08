@@ -20,6 +20,7 @@ import com.mitgobla.newsaggregator.database.ArticleViewModelFactory
 import com.mitgobla.newsaggregator.network.NewsApiInterface
 import com.mitgobla.newsaggregator.network.NewsApiResponse
 import com.mitgobla.newsaggregator.topics.Topic
+import kotlinx.coroutines.flow.count
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -29,7 +30,7 @@ class NewsReelFragment(val topic: Topic) : Fragment(R.layout.fragment_news_reel)
         ArticleViewModelFactory((activity?.application as ArticleApplication).repository)
     }
 
-    lateinit var newsReelRecyclerView: RecyclerView
+    private lateinit var newsReelRecyclerView: RecyclerView
     private lateinit var newsReelAdapter: NewsReelAdapter
 
     override fun onAttach(context: Context) {
@@ -39,18 +40,34 @@ class NewsReelFragment(val topic: Topic) : Fragment(R.layout.fragment_news_reel)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val loadingFrame = view.findViewById<View>(R.id.newsReelLoadingFrame)
+        loadingFrame.visibility = View.VISIBLE
+        val statusText = view.findViewById<View>(R.id.newsReelStatusText)
+        statusText.visibility = View.GONE
+        newsReelRecyclerView = view.findViewById(R.id.newsReelRecyclerView)
+        newsReelRecyclerView.layoutManager = LinearLayoutManager(context)
+        newsReelRecyclerView.visibility = View.GONE
+
+
         newsReelAdapter = NewsReelAdapter(topic) { article, topic ->
             onArticleClicked(article, topic)
         }
         newsReelAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        newsReelRecyclerView = view.findViewById(R.id.newsReelRecyclerView)
-        newsReelRecyclerView.layoutManager = LinearLayoutManager(context)
         newsReelRecyclerView.adapter = newsReelAdapter
 
         val topicName = topic.topic
         if (topicName != null) {
             articleViewModel.getArticlesByTopic(topicName).observe(viewLifecycleOwner) {
                 newsReelAdapter.submitList(it)
+
+                if (newsReelAdapter.itemCount == 0) {
+                    loadingFrame.visibility = View.GONE
+                    statusText.visibility = View.VISIBLE
+                } else {
+                    loadingFrame.visibility = View.GONE
+                    newsReelRecyclerView.visibility = View.VISIBLE
+                }
             }
         }
         Log.i("NewsReelFragment", "number of articles: ${newsReelAdapter.itemCount} for topic $topicName")

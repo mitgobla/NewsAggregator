@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     private var searchButtonVisible = false
     private var signOutButtonVisible = false
+    private var refreshButtonVisible = false
 
     private var currentFragment: Int = 0
     private lateinit var authListener: FirebaseAuth.AuthStateListener
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             .setInputData(Data.Builder().putBoolean("periodic", true).build())
             .build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("backgroundApiTask", ExistingPeriodicWorkPolicy.KEEP,periodicApiWorkRequest)
+        // Call the API once to get the latest news
+        callApi()
 
         // If we are logged in, make sure we have the topics in the user database
         TopicInitializer.setupTopics(this)
@@ -56,7 +59,11 @@ class MainActivity : AppCompatActivity() {
         // set the toolbar
         val toolbar = findViewById<Toolbar>(R.id.mainToolbar)
         setSupportActionBar(toolbar)
-        searchButtonVisible = false
+
+
+        searchButtonVisible = savedInstanceState?.getBoolean("searchButtonVisible") ?: false
+        signOutButtonVisible = savedInstanceState?.getBoolean("signOutButtonVisible") ?: false
+        refreshButtonVisible = savedInstanceState?.getBoolean("refreshButtonVisible") ?: false
 
         // values for fragments, that are used as tabs in the bottom navigation
         val fragments = listOf(FrontPageFragment(), TopicsFragment(), ProfileFragment())
@@ -80,26 +87,29 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationBar.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.homeAction -> {
-                    setCurrentFragment(fragments[0])
                     currentFragment = 0
+                    setCurrentFragment(fragments[currentFragment])
                     searchButtonVisible = false
                     signOutButtonVisible = false
+                    refreshButtonVisible = true
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.topicsAction -> {
-                    setCurrentFragment(fragments[1])
                     currentFragment = 1
+                    setCurrentFragment(fragments[currentFragment])
                     searchButtonVisible = true
                     signOutButtonVisible = false
+                    refreshButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.profileAction -> {
-                    setCurrentFragment(fragments[2])
-                    currentFragment = 3
-                    searchButtonVisible = false
-                    // if user is signed in, show sign out button
+                    currentFragment = 2
+                    setCurrentFragment(fragments[currentFragment])
+                    // If user is signed in, show sign out button
                     val user = GoogleSignIn.getLastSignedInAccount(this)
+                    searchButtonVisible = false
                     signOutButtonVisible = user != null
+                    refreshButtonVisible = false
                     return@setOnNavigationItemSelectedListener true
                 }
                 else -> {
@@ -111,9 +121,17 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
     }
 
+    private fun callApi() {
+        val apiWorker = OneTimeWorkRequestBuilder<NewsApiWorker>()
+            .setInputData(Data.Builder().putBoolean("periodic", false).build())
+            .build()
+        WorkManager.getInstance(this).enqueueUniqueWork("updateFrontPageFromApi", ExistingWorkPolicy.REPLACE, apiWorker)
+    }
+
     private fun setupBottomNavigation() {
         val user = GoogleSignIn.getLastSignedInAccount(this)
         bottomNavigationBar.menu.findItem(R.id.topicsAction).isVisible = user != null
+        Log.d("MainActivity", "setupBottomNavigation: ${user != null}")
     }
 
     private fun setCurrentFragment(fragment: Fragment) = supportFragmentManager.beginTransaction().apply {
@@ -131,6 +149,10 @@ class MainActivity : AppCompatActivity() {
         if (signOutItem != null) {
             signOutItem.isVisible = signOutButtonVisible
         }
+        val refreshItem = menu?.findItem(R.id.toolbarRefresh)
+        if (refreshItem != null) {
+            refreshItem.isVisible = refreshButtonVisible
+        }
         return true
     }
 
@@ -141,10 +163,22 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.toolbarRefresh -> {
+                callApi()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putBoolean("searchButtonVisible", searchButtonVisible)
         outState.putBoolean("signOutButtonVisible", signOutButtonVisible)
+        outState.putBoolean("refreshButtonVisible", refreshButtonVisible)
+        outState.putInt("currentFragment", currentFragment)
     }
 
     override fun onStop() {

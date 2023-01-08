@@ -20,6 +20,7 @@
     <string name="actionStar">Favourite</string>
     <string name="topicPlaceholder">News Topic</string>
     <string name="commentNamePlaceholder">Comment written by Name Name</string>
+    <string name="commentAuthor">Comment written by %s</string>
     <string name="profileNamePlaceholder">%s\'s Profile</string>
     <string name="anonymous">Anonymous</string>
     <string name="about">About</string>
@@ -36,6 +37,14 @@
     <string name="signOut">Sign Out</string>
     <string name="notifyDescription">Toggle Notification</string>
     <string name="shareDescription">Share article using</string>
-    <string name="articleBy">Article by %s</string>
+    <string name="articleBy">Article by </string>
     <string name="notificationInfo">You will be notified when new articles are published for this topic</string>
+    <string name="loadingArticles">Loading Articles…</string>
+    <string name="noArticles">No articles to show</string>
+    <string name="refresh">Refresh</string>
+    <string name="commentHint">Write your comment here</string>
+    <string name="commentsHeader">Comments</string>
+    <string name="addComment">Add Comment</string>
+    <string name="post">Post</string>
+    <string name="cancel">Cancel</string>
 </resources>

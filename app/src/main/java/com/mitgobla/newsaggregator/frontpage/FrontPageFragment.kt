@@ -83,11 +83,6 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
             }.attach()
             viewPager.currentItem = currentTab
         }
-
-        val apiWorker = OneTimeWorkRequestBuilder<NewsApiWorker>()
-            .setInputData(Data.Builder().putBoolean("periodic", false).build())
-            .build()
-        WorkManager.getInstance(requireContext()).enqueueUniqueWork("updateFrontPageFromApi", ExistingWorkPolicy.REPLACE, apiWorker)
     }
 
     private fun resumeLastPosition() {
@@ -107,9 +102,15 @@ class FrontPageFragment:Fragment(R.layout.fragment_front_page) {
         resumeLastPosition()
     }
 
+    override fun onPause() {
+        super.onPause()
+        currentTab = viewPager.currentItem
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         currentTab = viewPager.currentItem
+        Log.d("FrontPageFragment", "Saving current tab $currentTab")
         FirebaseAuth.getInstance().removeAuthStateListener { authListener }
     }
 

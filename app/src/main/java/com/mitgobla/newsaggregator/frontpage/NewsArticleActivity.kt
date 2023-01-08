@@ -8,14 +8,21 @@ import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -23,11 +30,13 @@ import com.mitgobla.newsaggregator.R
 import com.mitgobla.newsaggregator.database.Bookmark
 import com.mitgobla.newsaggregator.topics.Topic
 
-class NewsArticleActivity : AppCompatActivity() {
+class NewsArticleActivity : AppCompatActivity(), CommentDialogFragment.CommentDialogListener {
 
     private lateinit var authenticationListener : FirebaseAuth.AuthStateListener
 
+    private lateinit var articleUrl : String
     private lateinit var bookmarkMenuItem : MenuItem
+    private lateinit var newsArticleCommentAdapter : CommentsAdapter
     private var bookmarked : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +45,7 @@ class NewsArticleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_article)
         val articleHeader = intent.getStringExtra("articleTitle")
         val articleImageUrl = intent.getStringExtra("articleImageUrl")
-        val articleUrl = intent.getStringExtra("articleUrl")
+        articleUrl = intent.getStringExtra("articleUrl").toString()
         val articleContent = intent.getStringExtra("articleContent")
         val articleAuthorName = intent.getStringExtra("articleAuthorName")
         val articleAuthorUrl = intent.getStringExtra("articleAuthorUrl")
@@ -63,7 +72,7 @@ class NewsArticleActivity : AppCompatActivity() {
         }
 
         val newsArticleAuthor = findViewById<AppCompatTextView>(R.id.authorName)
-        val authorWithUrl = "<a href='$articleAuthorUrl'>$articleAuthorName</a>"
+        val authorWithUrl = "<p>${getString(R.string.articleBy)}<a href='$articleAuthorUrl'> $articleAuthorName</a></p>"
         newsArticleAuthor.text = Html.fromHtml(authorWithUrl, Html.FROM_HTML_MODE_COMPACT)
         newsArticleAuthor.movementMethod = LinkMovementMethod.getInstance()
 
@@ -99,16 +108,25 @@ class NewsArticleActivity : AppCompatActivity() {
             }
         }
 
+        val newsArticleAddCommentButton = findViewById<AppCompatButton>(R.id.addCommentButton)
+        newsArticleAddCommentButton.setOnClickListener {
+            onAddCommentClicked()
+        }
+        val newsArticleCommentRecyclerView = findViewById<RecyclerView>(R.id.commentsRecyclerView)
+        newsArticleCommentAdapter = CommentsAdapter()
+        newsArticleCommentRecyclerView.adapter = newsArticleCommentAdapter
+        newsArticleCommentRecyclerView.layoutManager = LinearLayoutManager(this)
+
         bookmarkMenuItem = bottomNavigationView.menu.findItem(R.id.bookmarkAction)
         authenticationListener = FirebaseAuth.AuthStateListener {
             val user = GoogleSignIn.getLastSignedInAccount(this)
             bookmarkMenuItem.isVisible = user != null
+            newsArticleAddCommentButton.isVisible = user != null
         }
         FirebaseAuth.getInstance().addAuthStateListener(authenticationListener)
 
-        if (articleUrl != null) {
-            checkIfBookmarked(articleUrl)
-        }
+        checkIfBookmarked(articleUrl)
+        getComments(articleUrl)
     }
 
     private fun incrementMetrics(topic: String) {
@@ -140,6 +158,23 @@ class NewsArticleActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun getComments(url: String) {
+        val db = Firebase.firestore
+        db.collection("comments").whereEqualTo("articleUrl", url).get().addOnSuccessListener { documents ->
+            val comments = mutableListOf<Comment>()
+            for (document in documents) {
+                val comment = document.toObject(Comment::class.java)
+                comments.add(comment)
+            }
+            newsArticleCommentAdapter.submitList(comments)
+        }
+    }
+
+    private fun onAddCommentClicked() {
+        val commentDialogFragment = CommentDialogFragment()
+        commentDialogFragment.show(supportFragmentManager, "commentDialog")
     }
 
     private fun setBookmarkIcon() {
@@ -192,5 +227,23 @@ class NewsArticleActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         FirebaseAuth.getInstance().removeAuthStateListener(authenticationListener)
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        val commentEditText = dialog.dialog?.findViewById<AppCompatEditText>(R.id.commentInputTextBox)
+        val comment = commentEditText?.text.toString()
+        if (comment.isNotEmpty()) {
+            val user = GoogleSignIn.getLastSignedInAccount(this)
+            if (user != null) {
+                val db = Firebase.firestore
+                val commentObject = Comment(user.displayName!!, comment, articleUrl)
+                db.collection("comments").add(commentObject)
+                getComments(articleUrl)
+            }
+        }
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        return
     }
 }

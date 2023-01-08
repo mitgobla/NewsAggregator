@@ -2,92 +2,45 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingHorizontal="10dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/commentCard"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="5dp"
-        app:cardMaxElevation="7dp"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true">
+        android:minHeight="32dp"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="3dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="4dp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/commentAuthor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="10dp">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/authorImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:background="@color/black"
-                    android:contentDescription="@string/authorImageDescriptionPlaceholder"
-                    android:cropToPadding="false"
-                    android:maxWidth="48dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ImageContrastCheck"
-                    tools:srcCompat="@tools:sample/avatars" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/authorName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="5dp"
-                    android:text="@string/commentNamePlaceholder"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/authorImage"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/commentNamePlaceholder"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/commentText"
+                android:id="@+id/commentContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="15dp"
-                android:paddingBottom="5dp"
-                android:text="@string/loremIpsumShort" />
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/loremIpsumShort"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/buttonShare"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/shareAction"
-                    android:maxWidth="48dp"
-                    android:minHeight="48dp"
-                    app:srcCompat="?attr/actionModeShareDrawable" />
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/buttonReport"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/shareAction"
-                    android:maxWidth="48dp"
-                    android:minHeight="48dp"
-                    app:srcCompat="@drawable/ic_baseline_report_24" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

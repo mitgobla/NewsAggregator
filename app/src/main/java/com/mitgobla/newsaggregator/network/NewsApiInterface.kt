@@ -21,7 +21,7 @@ interface NewsApiInterface {
     ): Call<NewsApiResponse>
 
     companion object {
-        var BASE_URL = "https://gnews.io/api/v4/"
+        private var BASE_URL = "https://gnews.io/api/v4/"
 
         fun create(): NewsApiInterface {
             val retrofit = Retrofit.Builder()
