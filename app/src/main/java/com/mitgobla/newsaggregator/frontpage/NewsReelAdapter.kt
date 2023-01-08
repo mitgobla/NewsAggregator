@@ -37,7 +37,7 @@ class NewsReelAdapter(private var topic: Topic, private var clickListener: (Arti
         private val newsItemHeader: AppCompatTextView = itemView.findViewById(R.id.newsItemHeader)
         private val newsItemBrief: AppCompatTextView = itemView.findViewById(R.id.newsItemBrief)
 
-        fun bind(position: Int, article: Article, topic: Topic, clickListener: (Article, Topic) -> Unit) {
+        fun bind(position: Int, article: Article, topic: Topic,  clickListener: (Article, Topic) -> Unit) {
             itemView.setOnClickListener {
                 clickListener.invoke(article, topic)
             }

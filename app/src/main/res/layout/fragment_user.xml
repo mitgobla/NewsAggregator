@@ -60,29 +60,26 @@
             android:text="@string/metrics"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/profileMetricsText"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/metricsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="5"
-            android:paddingHorizontal="15dp"
-            android:paddingVertical="5dp"
-            android:text="@string/loremIpsumShort" />
+            tools:listitem="@layout/metric_item" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/profileBookmarksTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="10dp"
+            android:paddingTop="5dp"
             android:text="@string/bookmarks"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#616161" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/historyView"
+            android:id="@+id/bookmarksRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/news_item" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

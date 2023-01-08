@@ -6,5 +6,6 @@ data class Bookmark(
     var imageUrl: String = "",
     var content: String = "",
     var authorName: String = "",
-    var authorUrl: String = ""
+    var authorUrl: String = "",
+    var topic: String = ""
 )

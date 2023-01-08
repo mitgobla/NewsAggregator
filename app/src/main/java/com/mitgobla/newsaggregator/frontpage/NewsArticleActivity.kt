@@ -88,10 +88,11 @@ class NewsArticleActivity : AppCompatActivity(), CommentDialogFragment.CommentDi
                 R.id.bookmarkAction -> {
                     bookmarked = !bookmarked
                     if (bookmarked) {
-                        bookmarkArticle(articleHeader!!, articleUrl!!, articleImageUrl!!, articleContent!!, articleAuthorName!!, articleAuthorUrl!!)
+                        bookmarkArticle(articleHeader!!,
+                            articleUrl, articleImageUrl!!, articleContent!!, articleAuthorName!!, articleAuthorUrl!!, articleTopic!!)
                         setBookmarkIcon()
                     } else {
-                        unbookmarkArticle(articleUrl!!)
+                        unbookmarkArticle(articleUrl)
                         setBookmarkIcon()
                     }
                     true
@@ -187,11 +188,11 @@ class NewsArticleActivity : AppCompatActivity(), CommentDialogFragment.CommentDi
         }
     }
 
-    private fun bookmarkArticle(title: String, url: String, imageUrl: String, content: String, authorName: String, authorUrl: String) {
+    private fun bookmarkArticle(title: String, url: String, imageUrl: String, content: String, authorName: String, authorUrl: String, articleTopic: String) {
         val user = GoogleSignIn.getLastSignedInAccount(this)
         if (user != null) {
             val db = Firebase.firestore
-            val bookmark = Bookmark(title, url, imageUrl, content, authorName, authorUrl)
+            val bookmark = Bookmark(title, url, imageUrl, content, authorName, authorUrl, articleTopic)
             // check if bookmark already exists in database, if not add it
             db.collection("bookmarks").document(url.hashCode().toString()).get().addOnSuccessListener { document ->
                 if (!document.exists()) {
